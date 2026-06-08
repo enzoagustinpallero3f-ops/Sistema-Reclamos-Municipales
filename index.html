@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reclamos - Municipalidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            z-index: 9999;
+            overflow: auto;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-card {
+            background: #1e2736;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid #2d3748;
+            margin: auto;
+        }
+
+        .login-card h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #e4e6eb;
+        }
+
+        .login-card p {
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-form-group label {
+            display: block;
+            color: #e4e6eb;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .login-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            background: #252d3d;
+            color: #e4e6eb;
+            font-size: 14px;
+        }
+
+        .login-form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .credentials-info {
+            background: #252d3d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+            font-size: 12px;
+        }
+
+        .credentials-info strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .credentials-info p {
+            color: #a0a0a0;
+            margin: 5px 0;
+        }
+
+        .error-msg {
+            background: #3a1e1e;
+            color: #f8a0a0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+            font-size: 13px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        .main-content.show {
+            display: block;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        header {
+            background: #1e2736;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            flex: 1;
+        }
+
+        header h1 {
+            color: #e4e6eb;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #a0a0a0;
+            font-size: 16px;
+        }
+
+        .help-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .help-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .header-top {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .help-button {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        .section-card {
+            background: #1e2736;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-header.tech {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .icon {
+            font-size: 24px;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .option-group {
+            margin-bottom: 15px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: #252d3d;
+            border-color: #667eea;
+        }
+
+        .option-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .option-text h3 {
+            color: #e4e6eb;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .option-text p {
+            color: #a0a0a0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .expandable {
+            margin-bottom: 15px;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .expandable-header {
+            padding: 15px;
+            background: #252d3d;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .expandable-header:hover {
+            background: #2d3748;
+        }
+
+        .expandable-header h4 {
+            color: #e4e6eb;
+            font-size: 15px;
+        }
+
+        .expandable-toggle {
+            color: #667eea;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .expandable.active .expandable-toggle {
+            transform: rotate(180deg);
+        }
+
+        .expandable-content {
+            display: none;
+            padding: 15px;
+            background: #1e2736;
+            border-top: 1px solid #2d3748;
+        }
+
+        .expandable.active .expandable-content {
+            display: block;
+        }
+
+        .expandable-content ul {
+            list-style: none;
+        }
+
+        .expandable-content li {
+            padding: 8px 0;
+            color: #a0a0a0;
+            font-size: 14px;
+            cursor: pointer;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .expandable-content li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .expandable-content li:hover {
+            color: #667eea;
+        }
+
+        .form-section {
+            background: #1e2736;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        /* ADMIN PANEL STYLES */
+        .admin-panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .admin-panel h3 {
+            color: #e4e6eb;
+        }
+
+        .section {
+            background: #1e2736;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #252d3d;
+            padding: 20px;
+            border-radius: 12px;
+            border-top: 4px solid #667eea;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #a0a0a0;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-card.alto { border-top-color: #f5576c; }
+        .stat-card.alto .stat-number { color: #f5576c; }
+        
+        .stat-card.normal { border-top-color: #ffc107; }
+        .stat-card.normal .stat-number { color: #ffc107; }
+        
+        .stat-card.bajo { border-top-color: #28a745; }
+        .stat-card.bajo .stat-number { color: #28a745; }
+
+        .filters {
+            background: #252d3d;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 10px;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            background: #1e2736;
+            color: #e4e6eb;
+            font-size: 14px;
+        }
+
+        .table-wrapper {
+            background: #252d3d;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: #1e2736;
+            border-bottom: 2px solid #2d3748;
+        }
+
+        th {
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #667eea;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #2d3748;
+            color: #e4e6eb;
+        }
+
+        tbody tr:hover {
+            background: #1e2736;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-alto { background: #ffebee; color: #c62828; }
+        .badge-normal { background: #fff3e0; color: #e65100; }
+        .badge-bajo { background: #e8f5e9; color: #2e7d32; }
+        .badge-autorizado { background: #e8f5e9; color: #2e7d32; }
+        .badge-revision { background: #fff3e0; color: #e65100; }
+        .badge-completado { background: #e3f2fd; color: #1565c0; }
+
+        .no-data {
+            padding: 40px;
+            text-align: center;
+            color: #5a5f6b;
+        }
+
+        .btn-secondary {
+            background: #252d3d;
+            color: #e4e6eb;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+
+        .btn-secondary:hover {
+            background: #2d3748;
+        }
+
+        .form-section h2 {
+            color: #e4e6eb;
+            font-size: 22px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #e4e6eb;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            background: #252d3d;
+            color: #e4e6eb;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .photo-upload {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .photo-upload label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #252d3d;
+            color: #e4e6eb;
+        }
+
+        .photo-upload label:hover {
+            background: #2d3748;
+            border-color: #764ba2;
+        }
+
+        .photo-upload input[type="file"] {
+            display: none;
+        }
+
+        .photo-preview {
+            margin-top: 15px;
+            max-width: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-cancel {
+            background: #252d3d;
+            color: #e4e6eb;
+            flex: 1;
+        }
+
+        .btn-cancel:hover {
+            background: #2d3748;
+        }
+
+        .success-message {
+            background: #1e3a2a;
+            color: #6fddbd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #28a745;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .submitted-list {
+            margin-top: 30px;
+        }
+
+        .submitted-list h3 {
+            color: #e4e6eb;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .reclamo-item {
+            background: #252d3d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .reclamo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .reclamo-title {
+            color: #e4e6eb;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .reclamo-priority {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .priority-alto {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .priority-normal {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .priority-bajo {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .reclamo-details {
+            font-size: 13px;
+            color: #a0a0a0;
+        }
+
+        .reclamo-details p {
+            margin: 5px 0;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #5a5f6b;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .back-button {
+            background: #252d3d;
+            color: #e4e6eb;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: #2d3748;
+        }
+
+        .recent-section-container {
+            background: #1e2736;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            display: none;
+            margin-bottom: 30px;
+        }
+
+        .recent-section-container.show {
+            display: block;
+        }
+
+        .recent-section-container h2 {
+            color: #e4e6eb;
+            font-size: 20px;
+            margin-bottom: 25px;
+        }
+
+        .category-group {
+            margin-bottom: 30px;
+        }
+
+        .category-title {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px;
+            background: #252d3d;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .category-title.tech {
+            color: #f5576c;
+            border-left-color: #f5576c;
+        }
+
+        .recent-item {
+            background: #252d3d;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .recent-item.tech {
+            border-left-color: #f5576c;
+        }
+
+        .recent-item:hover {
+            background: #2d3748;
+            transform: translateX(5px);
+        }
+
+        .recent-title {
+            color: #e4e6eb;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .recent-info {
+            color: #a0a0a0;
+            font-size: 12px;
+            margin: 2px 0;
+        }
+
+        /* Modal de Ayuda */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #1e2736;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            color: #e4e6eb;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e4e6eb;
+        }
+
+        .close-modal {
+            color: #a0a0a0;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #e4e6eb;
+        }
+
+        .help-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #2d3748;
+        }
+
+        .help-tab-btn {
+            background: #252d3d;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #a0a0a0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .help-tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: #1e2736;
+        }
+
+        .help-tab-btn:hover {
+            color: #e4e6eb;
+        }
+
+        .help-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .help-tab-content.active {
+            display: block;
+        }
+
+        .help-section {
+            margin-bottom: 20px;
+        }
+
+        .help-section h3 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .help-section p, .help-section li {
+            color: #a0a0a0;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .help-section ol {
+            margin-left: 20px;
+        }
+
+        .help-section li {
+            margin-bottom: 5px;
+        }
+
+        .help-highlight {
+            background: #252d3d;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            color: #e4e6eb;
+        }
+
+        .help-code {
+            background: #0f1419;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: monospace;
+            color: #6fddbd;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+
+        .modal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal::-webkit-scrollbar-track {
+            background: #1e2736;
+        }
+
+        .modal::-webkit-scrollbar-thumb {
+            background: #2d3748;
+            border-radius: 4px;
+        }
+
+        .modal::-webkit-scrollbar-thumb:hover {
+            background: #3d4758;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <h1>🏛️ Sistema de Reclamos</h1>
+            <p>Ingresa tus credenciales para continuar</p>
+
+            <div id="errorMsg" class="error-msg"></div>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="login-form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="username" placeholder="ej: usuario" required>
+                </div>
+
+                <div class="login-form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="login-btn">🔓 Ingresar</button>
+            </form>
+
+            <div class="credentials-info">
+                <strong>📝 Credenciales de prueba:</strong>
+                <p><strong>Usuario:</strong> usuario | <strong>Contraseña:</strong> 123456</p>
+                <p><strong>Admin:</strong> admin | <strong>Contraseña:</strong> admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div id="mainContent" class="main-content">
+        <div class="header-top">
+            <button id="logoutBtn" onclick="logout()" style="padding: 10px 20px; background: #252d3d; color: #e4e6eb; border: 1px solid #2d3748; border-radius: 8px; cursor: pointer; font-weight: 600;">🚪 Salir</button>
+        </div>
+        <div class="container">
+        <div class="header-top">
+            <header>
+                <h1>🏛️ Sistema de Reclamos Municipales</h1>
+                <p>Registra tu solicitud o reclamo</p>
+            </header>
+        </div>
+
+        <div id="selectionView" class="main-content">
+            <!-- Servicios Generales -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="icon">🔧</span>
+                    <span>Servicios Generales</span>
+                </div>
+                <div class="section-content">
+                    <p style="color: #a0a0a0; margin-bottom: 20px; font-size: 14px;">Podés generar una solicitud para Servicios Generales con las opciones proporcionadas.</p>
+                    
+                    <div class="option" onclick="selectService('Limpieza', 'Servicios Generales')">
+                        <div class="option-icon">🧹</div>
+                        <div class="option-text">
+                            <h3>Limpieza</h3>
+                            <p>Envía una solicitud para que ayudemos a mantener tu espacio limpio y ordenado.</p>
+                        </div>
+                    </div>
+
+                    <div class="option" onclick="selectService('Mantenimiento', 'Servicios Generales')">
+                        <div class="option-icon">🔩</div>
+                        <div class="option-text">
+                            <h3>Mantenimiento</h3>
+                            <p>Registra un problema de mantenimiento que requiere nuestra atención.</p>
+                        </div>
+                    </div>
+
+                    <div class="option" onclick="selectService('Obras', 'Servicios Generales')">
+                        <div class="option-icon">👷</div>
+                        <div class="option-text">
+                            <h3>Obras</h3>
+                            <p>Informa si necesitas que ayudemos a realizar reparaciones en el espacio.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modernización y Tecnología -->
+            <div class="section-card">
+                <div class="section-header tech">
+                    <span class="icon">💻</span>
+                    <span>Modernización y Tecnología</span>
+                </div>
+                <div class="section-content">
+                    <p style="color: #a0a0a0; margin-bottom: 20px; font-size: 14px;">Podés generar una solicitud a Sistemas y Tecnología con las opciones proporcionadas.</p>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpandable(this)">
+                            <h4>Cuentas y Permisos Institucionales</h4>
+                            <span class="expandable-toggle">▼</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li onclick="selectService('Mi cuenta de SIAT', 'Modernización y Tecnología')">Mi cuenta de SIAT</li>
+                                <li onclick="selectService('Mi cuenta de Turnera', 'Modernización y Tecnología')">Mi cuenta de Turnera</li>
+                                <li onclick="selectService('Mi cuenta de ADO', 'Modernización y Tecnología')">Mi cuenta de ADO</li>
+                                <li onclick="selectService('Mi cuenta de gestión de Trámites', 'Modernización y Tecnología')">Mi cuenta de gestión de Trámites</li>
+                                <li onclick="selectService('Mi cuenta de Registro de Visitas', 'Modernización y Tecnología')">Mi cuenta de Registro de Visitas</li>
+                                <li onclick="selectService('Mi cuenta de Mis Reportes', 'Modernización y Tecnología')">Mi cuenta de Mis Reportes</li>
+                                <li onclick="selectService('Mi cuenta de Intranet', 'Modernización y Tecnología')">Mi cuenta de Intranet</li>
+                                <li onclick="selectService('Mi cuenta de Correo Electrónico Oficial', 'Modernización y Tecnología')">Mi cuenta de Correo Electrónico Oficial</li>
+                                <li onclick="selectService('Mi cuenta de GDE', 'Modernización y Tecnología')">Mi cuenta de GDE</li>
+                                <li onclick="selectService('Mi cuenta de MOCHA', 'Modernización y Tecnología')">Mi cuenta de MOCHA</li>
+                                <li onclick="selectService('Mi cuenta de RAFAM', 'Modernización y Tecnología')">Mi cuenta de RAFAM</li>
+                                <li onclick="selectService('Mi cuenta de Jira Service Management', 'Modernización y Tecnología')">Mi cuenta de Jira Service Management</li>
+                                <li onclick="selectService('Otros sistemas de Mi cuenta', 'Modernización y Tecnología')">Otros sistemas de Mi cuenta</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpandable(this)">
+                            <h4>Soporte de Sistemas Institucionales</h4>
+                            <span class="expandable-toggle">▼</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li onclick="selectService('Soporte con Mis Trámites', 'Modernización y Tecnología')">Soporte con Mis Trámites</li>
+                                <li onclick="selectService('Soporte de Administración RRHH', 'Modernización y Tecnología')">Soporte de Administración RRHH</li>
+                                <li onclick="selectService('Incidente Web Catastro', 'Modernización y Tecnología')">Incidente Web Catastro</li>
+                                <li onclick="selectService('Soporte para plataforma de Stock', 'Modernización y Tecnología')">Soporte para plataforma de Stock</li>
+                                <li onclick="selectService('Soporte con Mi3F', 'Modernización y Tecnología')">Soporte con Mi3F</li>
+                                <li onclick="selectService('Soporte de Tóken ADO', 'Modernización y Tecnología')">Soporte de Tóken ADO</li>
+                                <li onclick="selectService('Soporte con la Turnera', 'Modernización y Tecnología')">Soporte con la Turnera</li>
+                                <li onclick="selectService('Soporte con la Guía de Trámites', 'Modernización y Tecnología')">Soporte con la Guía de Trámites</li>
+                                <li onclick="selectService('Soporte con Mis Reportes', 'Modernización y Tecnología')">Soporte con Mis Reportes</li>
+                                <li onclick="selectService('Soporte con Internet', 'Modernización y Tecnología')">Soporte con Internet</li>
+                                <li onclick="selectService('Soporte Jira Service Management (Plataforma de Mesa de Ayuda)', 'Modernización y Tecnología')">Soporte Jira Service Management (Plataforma de Mesa de Ayuda)</li>
+                                <li onclick="selectService('Necesito reportar una caída de plataforma', 'Modernización y Tecnología')">Necesito reportar una caída de plataforma</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpandable(this)">
+                            <h4>Soporte para mi computadora u otros equipos de oficina</h4>
+                            <span class="expandable-toggle">▼</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li onclick="selectService('Soporte para computadora', 'Modernización y Tecnología')">Soporte para computadora</li>
+                                <li onclick="selectService('Soporte para periféricos', 'Modernización y Tecnología')">Soporte para periféricos</li>
+                                <li onclick="selectService('Soporte para impresoras', 'Modernización y Tecnología')">Soporte para impresoras</li>
+                                <li onclick="selectService('Soporte para Teléfono', 'Modernización y Tecnología')">Soporte para Teléfono</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpandable(this)">
+                            <h4>Soporte para infraestructura y tecnología</h4>
+                            <span class="expandable-toggle">▼</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li onclick="selectService('Conectividad a Internet', 'Modernización y Tecnología')">Conectividad a Internet</li>
+                                <li onclick="selectService('Aperturas de Puertas', 'Modernización y Tecnología')">Aperturas de Puertas</li>
+                                <li onclick="selectService('Soporte para infraestructura', 'Modernización y Tecnología')">Soporte para infraestructura</li>
+                                <li onclick="selectService('Cableado', 'Modernización y Tecnología')">Cableado</li>
+                                <li onclick="selectService('Pantallas', 'Modernización y Tecnología')">Pantallas</li>
+                                <li onclick="selectService('Tableros', 'Modernización y Tecnología')">Tableros</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="expandable">
+                        <div class="expandable-header" onclick="toggleExpandable(this)">
+                            <h4>Soporte para ingresos públicos y tesorería</h4>
+                            <span class="expandable-toggle">▼</span>
+                        </div>
+                        <div class="expandable-content">
+                            <ul>
+                                <li onclick="selectService('Necesito soporte con las cuentas de TSG', 'Modernización y Tecnología')">Necesito soporte con las cuentas de TSG</li>
+                                <li onclick="selectService('Necesito soporte con Tasas Comerciales', 'Modernización y Tecnología')">Necesito soporte con Tasas Comerciales</li>
+                                <li onclick="selectService('Necesito soporte con Automotor/Moto', 'Modernización y Tecnología')">Necesito soporte con Automotor/Moto</li>
+                                <li onclick="selectService('Necesito soporte con Nota de Crédito Fiscal', 'Modernización y Tecnología')">Necesito soporte con Nota de Crédito Fiscal</li>
+                                <li onclick="selectService('Necesito soporte con Programa Altos de Podestá', 'Modernización y Tecnología')">Necesito soporte con Programa Altos de Podestá</li>
+                                <li onclick="selectService('Necesito soporte con el Imputador (Tesorería)', 'Modernización y Tecnología')">Necesito soporte con el Imputador (Tesorería)</li>
+                                <li onclick="selectService('Necesito soporte con Monotasa', 'Modernización y Tecnología')">Necesito soporte con Monotasa</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="formView" class="form-section">
+            <button class="back-button" onclick="goBack()">← Volver a seleccionar</button>
+            
+            <h2>
+                <span id="serviceIcon">📝</span>
+                <span id="selectedServiceTitle">Nuevo Reclamo</span>
+            </h2>
+
+            <div class="success-message" id="successMessage">
+                ✅ ¡Reclamo registrado exitosamente!
+            </div>
+
+            <form id="reclamoForm" onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label for="titulo">Título del Reclamo *</label>
+                    <input type="text" id="titulo" placeholder="Título breve de tu solicitud" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre y Apellido *</label>
+                        <input type="text" id="nombre" placeholder="Ej: Juan García" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" placeholder="tu.email@ejemplo.com" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" placeholder="Ej: 0123-456789">
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion">Dirección o Subsecretaría Solicitante *</label>
+                        <input type="text" id="direccion" placeholder="Ej: Calle Principal 123" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prioridad">Prioridad *</label>
+                        <select id="prioridad" required>
+                            <option value="">Selecciona una prioridad</option>
+                            <option value="bajo">Bajo</option>
+                            <option value="normal">Normal</option>
+                            <option value="alto">Alto</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cargo">Cargo Laboral</label>
+                        <input type="text" id="cargo" placeholder="Ej: Administrativo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Reclamo *</label>
+                    <textarea id="descripcion" placeholder="Describe en detalle tu solicitud o problema..." required></textarea>
+                </div>
+
+                <div class="photo-upload">
+                    <label for="fotografia">
+                        📸 Subir Fotografía (opcional)
+                        <div style="font-size: 12px; color: #5a5f6b; margin-top: 5px;">Haz clic para seleccionar una imagen</div>
+                    </label>
+                    <input type="file" id="fotografia" accept="image/*">
+                    <div class="photo-preview" id="photoPreview"></div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-cancel" onclick="goBack()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Enviar Reclamo</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div id="adminPanel" class="admin-panel">
+            <div class="section">
+                <h2>⚙️ Configuración Google Sheets</h2>
+                <div class="form-group">
+                    <label>URL de Google Apps Script</label>
+                    <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/d/...">
+                </div>
+                <div>
+                    <button class="btn-primary" onclick="guardarConfiguracion()" style="font-size: 12px; padding: 10px 20px;">✅ Guardar</button>
+                    <button class="btn-secondary" onclick="probarConexion()" style="font-size: 12px; padding: 10px 20px;">🧪 Probar</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Todos los Reclamos Registrados</h2>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>Total</h3>
+                        <div class="stat-number" id="totalReclamos">0</div>
+                    </div>
+                    <div class="stat-card alto">
+                        <h3>Prioridad Alta</h3>
+                        <div class="stat-number" id="prioridadAlta">0</div>
+                    </div>
+                    <div class="stat-card normal">
+                        <h3>Prioridad Normal</h3>
+                        <div class="stat-number" id="prioridadNormal">0</div>
+                    </div>
+                    <div class="stat-card bajo">
+                        <h3>Prioridad Baja</h3>
+                        <div class="stat-number" id="prioridadBaja">0</div>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Categoría</label>
+                        <select id="filterCategoria" onchange="aplicarFiltros()">
+                            <option value="">Todas</option>
+                            <option value="Servicios Generales">Servicios Generales</option>
+                            <option value="Modernización y Tecnología">Modernización y Tecnología</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Prioridad</label>
+                        <select id="filterPrioridad" onchange="aplicarFiltros()">
+                            <option value="">Todas</option>
+                            <option value="alto">Alto</option>
+                            <option value="normal">Normal</option>
+                            <option value="bajo">Bajo</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Estado</label>
+                        <select id="filterEstado" onchange="aplicarFiltros()">
+                            <option value="">Todos</option>
+                            <option value="autorizado">Autorizado</option>
+                            <option value="revision">Revisión</option>
+                            <option value="completado">Completado</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Búsqueda</label>
+                        <input type="text" id="filterNombreAdmin" placeholder="Nombre..." onkeyup="aplicarFiltros()">
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Solicitante</th>
+                                    <th>Servicio</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaReclamosAdmin">
+                                <tr>
+                                    <td colspan="7" class="no-data">No hay reclamos registrados</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedService = '';
+        let selectedCategory = '';
+        const photoInput = document.getElementById('fotografia');
+        const photoPreview = document.getElementById('photoPreview');
+
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    photoPreview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function toggleExpandable(header) {
+            const expandable = header.parentElement;
+            expandable.classList.toggle('active');
+        }
+
+        function selectService(service, category) {
+            selectedService = service;
+            selectedCategory = category;
+            
+            document.getElementById('selectionView').style.display = 'none';
+            document.getElementById('formView').classList.add('active');
+            
+            let icon = category === 'Servicios Generales' ? '🔧' : '💻';
+            document.getElementById('serviceIcon').textContent = icon;
+            document.getElementById('selectedServiceTitle').textContent = service;
+            
+            loadReclamos();
+        }
+
+        function goBack() {
+            document.getElementById('formView').classList.remove('active');
+            document.getElementById('selectionView').style.display = 'grid';
+            document.getElementById('reclamoForm').reset();
+            photoPreview.innerHTML = '';
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            
+            const reclamo = {
+                id: Date.now(),
+                titulo: document.getElementById('titulo').value,
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+                direccion: document.getElementById('direccion').value,
+                prioridad: document.getElementById('prioridad').value,
+                cargo: document.getElementById('cargo').value,
+                descripcion: document.getElementById('descripcion').value,
+                servicio: selectedService,
+                categoria: selectedCategory,
+                foto: photoPreview.innerHTML,
+                fecha: new Date().toLocaleDateString('es-AR')
+            };
+
+            let reclamos = JSON.parse(localStorage.getItem('reclamos') || '[]');
+            reclamos.push(reclamo);
+            localStorage.setItem('reclamos', JSON.stringify(reclamos));
+
+            // Intentar enviar a Google Sheets si está configurado
+            const scriptUrl = localStorage.getItem('googleAppsScriptUrl');
+            if (scriptUrl) {
+                fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reclamo)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Reclamo guardado en Google Sheets');
+                    }
+                })
+                .catch(err => console.log('Nota: Los datos se guardan localmente aunque no se sincronicen con Google Sheets'));
+            }
+
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('reclamoForm').reset();
+            photoPreview.innerHTML = '';
+            
+            setTimeout(() => {
+                loadReclamos();
+                loadRecentFormularies();
+            }, 500);
+        }
+
+
+        // ===== LOGIN FUNCTIONS =====
+        const usuarios = {
+            'usuario': { password: '123456', role: 'usuario' },
+            'admin': { password: 'admin123', role: 'admin' }
+        };
+
+        let currentUser = null;
+        let currentRole = null;
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!usuarios[username] || usuarios[username].password !== password) {
+                errorMsg.textContent = '❌ Usuario o contraseña incorrectos';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            errorMsg.classList.remove('show');
+            currentUser = username;
+            currentRole = usuarios[username].role;
+
+            localStorage.setItem('userRole', currentRole);
+            localStorage.setItem('currentUser', username);
+
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainContent').classList.add('show');
+            
+            // Mostrar panel según rol
+            if (currentRole === 'usuario') {
+                document.getElementById('selectionView').style.display = 'grid';
+                document.getElementById('formView').style.display = 'none';
+                document.getElementById('adminPanel').classList.remove('active');
+            } else if (currentRole === 'admin') {
+                document.getElementById('selectionView').style.display = 'none';
+                document.getElementById('formView').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                cargarReclamosAdmin();
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        function logout() {
+            currentUser = null;
+            currentRole = null;
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('currentUser');
+
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('show');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('errorMsg').classList.remove('show');
+
+            window.scrollTo(0, 0);
+        }
+
+        // Restaurar sesión si estaba logueado
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedRole = localStorage.getItem('userRole');
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedRole && savedUser) {
+                currentRole = savedRole;
+                currentUser = savedUser;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainContent').classList.add('show');
+                
+                if (savedRole === 'usuario') {
+                    document.getElementById('selectionView').style.display = 'grid';
+                    document.getElementById('adminPanel').classList.remove('active');
+                } else if (savedRole === 'admin') {
+                    document.getElementById('selectionView').style.display = 'none';
+                    document.getElementById('adminPanel').classList.add('active');
+                    cargarReclamosAdmin();
+                }
+            }
+        });
+
+        // ADMIN FUNCTIONS
+        let todosReclamosAdmin = [];
+
+        function cargarReclamosAdmin() {
+            const datos = localStorage.getItem('reclamos');
+            todosReclamosAdmin = datos ? JSON.parse(datos) : [];
+            aplicarFiltros();
+            actualizarEstadisticas();
+        }
+
+        function aplicarFiltros() {
+            const categoria = document.getElementById('filterCategoria').value;
+            const prioridad = document.getElementById('filterPrioridad').value;
+            const estado = document.getElementById('filterEstado').value;
+            const nombre = document.getElementById('filterNombreAdmin').value.toLowerCase();
+
+            const reclamosActuales = todosReclamosAdmin.filter(reclamo => {
+                return (!categoria || reclamo.categoria === categoria) &&
+                       (!prioridad || reclamo.prioridad === prioridad) &&
+                       (!estado || reclamo.estado === estado) &&
+                       (!nombre || reclamo.nombre.toLowerCase().includes(nombre));
+            }).sort((a, b) => b.id - a.id);
+
+            mostrarTablaAdmin(reclamosActuales);
+        }
+
+        function mostrarTablaAdmin(reclamos) {
+            const tabla = document.getElementById('tablaReclamosAdmin');
+            
+            if (reclamos.length === 0) {
+                tabla.innerHTML = '<tr><td colspan="6" class="no-data">No hay reclamos registrados</td></tr>';
+                return;
+            }
+
+            tabla.innerHTML = reclamos.map((reclamo, index) => `
+                <tr>
+                    <td><strong>REC-${String(index + 1).padStart(5, '0')}</strong></td>
+                    <td>${reclamo.fecha}</td>
+                    <td>${reclamo.nombre}</td>
+                    <td>${reclamo.selectedService || reclamo.servicio || '-'}</td>
+                    <td><span class="badge badge-${reclamo.prioridad}">${reclamo.prioridad.toUpperCase()}</span></td>
+                    <td><span class="badge badge-${reclamo.estado || 'revision'}">${(reclamo.estado || 'revision').charAt(0).toUpperCase() + (reclamo.estado || 'revision').slice(1)}</span></td>
+                    <td><button class="btn-secondary" onclick="verDetallesAdmin('${reclamo.id}')">Ver</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function actualizarEstadisticas() {
+            const stats = {
+                total: todosReclamosAdmin.length,
+                alto: todosReclamosAdmin.filter(r => r.prioridad === 'alto').length,
+                normal: todosReclamosAdmin.filter(r => r.prioridad === 'normal').length,
+                bajo: todosReclamosAdmin.filter(r => r.prioridad === 'bajo').length
+            };
+
+            document.getElementById('totalReclamos').textContent = stats.total;
+            document.getElementById('prioridadAlta').textContent = stats.alto;
+            document.getElementById('prioridadNormal').textContent = stats.normal;
+            document.getElementById('prioridadBaja').textContent = stats.bajo;
+        }
+
+        function verDetallesAdmin(id) {
+            const reclamo = todosReclamosAdmin.find(r => r.id == id);
+            if (!reclamo) return;
+
+            const detalles = `
+RECLAMO: ${reclamo.nombre}
+Email: ${reclamo.email}
+Teléfono: ${reclamo.telefono || 'No proporcionado'}
+Dirección: ${reclamo.direccion || '-'}
+
+Servicio: ${reclamo.selectedService || reclamo.servicio || '-'}
+Prioridad: ${reclamo.prioridad}
+Fecha: ${reclamo.fecha}
+
+Título: ${reclamo.titulo || '-'}
+
+Descripción:
+${reclamo.descripcion || '-'}
+            `;
+            
+            alert(detalles);
+        }
+
+        function guardarConfiguracion() {
+            const url = document.getElementById('scriptUrl').value.trim();
+            
+            if (!url) {
+                alert('❌ Ingresa la URL de Google Apps Script');
+                return;
+            }
+
+            localStorage.setItem('googleAppsScriptUrl', url);
+            alert('✅ Configuración guardada');
+        }
+
+        function probarConexion() {
+            const url = document.getElementById('scriptUrl').value.trim();
+            
+            if (!url) {
+                alert('❌ Ingresa la URL primero');
+                return;
+            }
+
+            alert('🧪 Probando conexión...');
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: Date.now(),
+                    nombre: 'Prueba',
+                    email: 'test@test.com'
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ¡Conexión exitosa!');
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Desconocido'));
+                }
+            })
+            .catch(err => {
+                alert('❌ Error de conexión');
+            });
+        }
+
+        // Recargar datos cada 5 segundos para admin
+        setInterval(() => {
+            if (currentRole === 'admin') {
+                cargarReclamosAdmin();
+            }
+        }, 5000);
+    </script>
+        </div>
+    </div>
+</body>
+</html>
